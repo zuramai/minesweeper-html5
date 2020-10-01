@@ -4,8 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minesweeper</title>
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-    
+    <div id="app">
+        <div class="container">
+            <div class="title">
+                <h1>Minesweeper</h1>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="difficultly">
+                        <label for="difficultly">Difficultly: </label>
+                        <select name="difficultly" id="difficultly">
+                            <option value="Easy">Easy</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Hard">Hard</option>
+                        </select>
+                    </div>
+                    <div class="statistics">
+                        
+                    </div>
+                    <div class="buttons">
+                        <button class="btn btn-primary">Play</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="canvas"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="assets/js/Minesweeper.js"></script>
+    <script src="assets/js/main.js"></script>
 </body>
 </html>

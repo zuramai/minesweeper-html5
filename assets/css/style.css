@@ -1,0 +1,57 @@
+@font-face {
+    font-family: 'Carter-One';
+    src: url('./../fonts/CarterOne-Regular.ttf')
+}
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+body {
+    background-color: #333;
+    font-family: 'Carter-One';
+}
+.title {
+    color: #fff;
+    margin-top: 3rem;
+}
+.title h1 {
+    font-size: 4rem;
+    text-align: center;
+}
+.container {
+    width: 992px;
+    margin: 0 auto;
+}
+.card {
+    background-color: rgba(102, 99, 99, 0.589);
+    border-radius: 1rem;
+}
+.card-header {
+    padding: 1rem;
+    color: #ddd;
+    display: flex;
+    justify-content: space-between;
+}
+.card-header select {
+    padding: .2rem .5rem;
+    border-radius: .2rem;
+    border: 1px solid #eee;
+    margin-left: 1rem;
+}
+.card-header svg {
+    width: 50px;
+}
+.card-body {
+    display: flex;
+    justify-content: center;
+    padding: 1rem
+}
+.btn {
+    padding: .5rem 1rem;
+    border-radius: .3rem;
+    border: 0;
+    color: #dfe6e9;
+    cursor: pointer;
+    background-color: #0984e3;
+}
