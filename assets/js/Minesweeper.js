@@ -33,8 +33,8 @@ class Minesweeper {
         this.blockSettings = {
             width: width / this.difficultlies[level].block_count_x ,
             height: height / this.difficultlies[level].block_count_y ,
-            color1: "#00b894",
-            color2: "#06d1a9",
+            color1: "#aad751",
+            color2: "#a2d149",
             hoverColor: "rgba(85, 239, 196,0.5)"
         }
         this.initBoard();
@@ -71,7 +71,7 @@ class Minesweeper {
                     }
                 }
                 this.blocks[i].push({
-                    color, x, y, status: false, hover:false, content: ''
+                    color, x, y, status: false, hover:false, content: '', revealed: false
                 })
             }
         }
@@ -79,22 +79,27 @@ class Minesweeper {
     }
     draw() {
         // console.log(this.blocks)
-        this.blocks.forEach(row => {
-            row.forEach(col => {
-                // console.log("asd")
+        this.blocks.forEach((row, rowIndex) => {
+            row.forEach((col,colIndex) => {
+
+
                 if(col.content == "mine") {
                     this.ctx.fillStyle = "rgba(214, 48, 49,0.2)";
                     this.ctx.fillRect(col.x, col.y, this.blockSettings.width, this.blockSettings.height)
                     this.ctx.drawImage(this.bombImage, col.x, col.y, this.blockSettings.width, this.blockSettings.height)
-                }else if(Number.isInteger(col.content)){
-                    this.ctx.fillStyle = col.hover ? this.blockSettings.hoverColor : col.color;
+                }else if(Number.isInteger(col.content) && col.revealed){
+                    if((rowIndex % 2 == 0 && colIndex % 2 == 1) || (colIndex % 2 == 0 && rowIndex % 2 == 1)) this.ctx.fillStyle = "#e5c29f";
+                    else this.ctx.fillStyle = "#d7b899"
+
                     this.ctx.fillRect(col.x, col.y, this.blockSettings.width, this.blockSettings.height)
 
-                    this.ctx.fillStyle = "#fff";
-                    this.ctx.font = "30px Arial"
-                    this.ctx.fillText(col.content, col.x + this.blockSettings.width/2 - this.ctx.measureText(col.content).width/2, col.y + this.blockSettings.height/2 + 10)
+                    if(col.content !== 0) {
+                        this.ctx.fillStyle = "#fff";
+                        this.ctx.font = "30px Arial"
+                        this.ctx.fillText(col.content, col.x + this.blockSettings.width/2 - this.ctx.measureText(col.content).width/2, col.y + this.blockSettings.height/2 + 10)
+                    }
                 }else{
-                    this.ctx.fillStyle = col.hover ? this.blockSettings.hoverColor : col.color;
+                    this.ctx.fillStyle = col.hover && !col.revealed ? this.blockSettings.hoverColor : col.color;
                     this.ctx.fillRect(col.x, col.y, this.blockSettings.width, this.blockSettings.height)
                 }
             });
@@ -102,11 +107,18 @@ class Minesweeper {
         this.generateNumbers();
 
     }
-    generateMines() {
+    generateMines(clickRowIndex, clickColIndex) {
         let numberOfMines = this.difficultlies[this.level].mines_count;
-        for(let i = 1; i <= numberOfMines; i++) {
+        let i = 1;
+        while(i <= numberOfMines) {
             let choosedBlocks = this.getRandomBlock();
-            this.blocks[choosedBlocks.rowIndex][choosedBlocks.colIndex].content = "mine";
+            if(choosedBlocks.rowIndex == clickRowIndex && choosedBlocks.colIndex == clickColIndex) {
+                continue;
+            }else{
+                console.log(choosedBlocks.rowIndex , choosedBlocks.colIndex ,clickRowIndex, clickColIndex)
+                this.blocks[choosedBlocks.rowIndex][choosedBlocks.colIndex].content = "mine";
+                i++;
+            }
         }
     }
     generateNumbers() {
@@ -155,7 +167,53 @@ class Minesweeper {
             rowIndex, colIndex
         }
     }
-    go() {
+    go(rowIndex, colIndex, rangeNo, isFirstClick=false) {
+        if(this.blocks[rowIndex][colIndex].content == 'mine' && isFirstClick) {
+            alert("BOMB!");
+            return;
+        }
+        let mapBlock = {
+            top: [-1,0],
+            bottom: [1, 0],
+            left: [0, -1],
+            right: [0, 1],
+            topRight: [-1,1],
+            topLeft: [-1, -1],
+            bottomRight: [1, 1],
+            bottomLeft: [1, -1],
+        }
+        
+        this.blocks[rowIndex][colIndex].revealed = true;
+        let maxRange = this.difficultlies[this.level].no_mines_radius;
+
+        for(let direction in mapBlock) {
+            let nextRowIndex = rowIndex + mapBlock[direction][0];    
+            let nextColIndex = colIndex + mapBlock[direction][1];    
+
+            let block_count_x = this.difficultlies[this.level].block_count_x - 1;
+            let block_count_y = this.difficultlies[this.level].block_count_y - 1;
+
+            if(direction == 'top' &&  rowIndex == 0) continue;
+            else if(direction == 'left' &&  colIndex == 0) continue;
+            else if(direction == 'right' &&  colIndex == block_count_x) continue;
+            else if(direction == 'bottom' &&  rowIndex == block_count_y) continue;
+            else if(direction == 'topRight' &&  (rowIndex == 0 || colIndex == block_count_x)) continue;
+            else if(direction == 'topLeft' &&  (rowIndex == 0 || colIndex == 0)) continue;
+            else if(direction == 'bottomRight' &&  (rowIndex == block_count_y || colIndex == block_count_x)) continue;
+            else if(direction == 'bottomLeft' &&  (rowIndex == block_count_y || colIndex == 0)) continue;
+            
+            let nextBlock = this.blocks[rowIndex + mapBlock[direction][0]][colIndex + mapBlock[direction][1]];
+
+            if(nextRowIndex < 0 || 
+                nextRowIndex > block_count_y ||
+                nextColIndex < 0 ||
+                nextColIndex > block_count_x ) return;
+            else if(nextBlock.revealed) continue ;
+            else if(!nextBlock.revealed && Number.isInteger(nextBlock.content)) nextBlock.revealed = true;
+            else if(rangeNo < maxRange) this.go(nextRowIndex, nextColIndex, rangeNo++)
+            else return;
+            
+        }
 
     }
     mouseEvent() {
@@ -196,9 +254,11 @@ class Minesweeper {
                         mousePosition.y >= col.y &&
                         mousePosition.y <= col.y + that.blockSettings.height) {
                         if(!this.firstClick) {
+                            that.generateMines(indexRow, indexCol)
                             this.firstClick = true;
-                            that.generateMines()
-                            that.go()
+                            that.go(indexRow,indexCol,0, true)
+                        }else{
+                            that.go(indexRow,indexCol,0)
                         }
                         console.log('clicked at ',col)
                     }
