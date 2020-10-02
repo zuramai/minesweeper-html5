@@ -6,6 +6,7 @@ class Minesweeper {
         this.blocks = [];
         this.canvas.height = height;
         this.level = level;
+        this.gameOver = false;
         this.firstClick = false;
         this.bombImage = bombImageEl;
         this.difficultlies = {
@@ -78,12 +79,10 @@ class Minesweeper {
         console.log(this.blocks)
     }
     draw() {
-        // console.log(this.blocks)
+        console.log(this.gameOver)
         this.blocks.forEach((row, rowIndex) => {
             row.forEach((col,colIndex) => {
-
-
-                if(col.content == "mine") {
+                if(col.content == "mine" && this.gameOver == true) {
                     this.ctx.fillStyle = "rgba(214, 48, 49,0.2)";
                     this.ctx.fillRect(col.x, col.y, this.blockSettings.width, this.blockSettings.height)
                     this.ctx.drawImage(this.bombImage, col.x, col.y, this.blockSettings.width, this.blockSettings.height)
@@ -115,7 +114,6 @@ class Minesweeper {
             if(choosedBlocks.rowIndex == clickRowIndex && choosedBlocks.colIndex == clickColIndex) {
                 continue;
             }else{
-                console.log(choosedBlocks.rowIndex , choosedBlocks.colIndex ,clickRowIndex, clickColIndex)
                 this.blocks[choosedBlocks.rowIndex][choosedBlocks.colIndex].content = "mine";
                 i++;
             }
@@ -168,10 +166,7 @@ class Minesweeper {
         }
     }
     go(rowIndex, colIndex, rangeNo, isFirstClick=false) {
-        if(this.blocks[rowIndex][colIndex].content == 'mine' && isFirstClick) {
-            alert("BOMB!");
-            return;
-        }
+        
         let mapBlock = {
             top: [-1,0],
             bottom: [1, 0],
@@ -182,8 +177,8 @@ class Minesweeper {
             bottomRight: [1, 1],
             bottomLeft: [1, -1],
         }
-        
-        this.blocks[rowIndex][colIndex].revealed = true;
+        if(this.blocks[rowIndex] == undefined) return;
+        this.blocks[rowIndex][colIndex].revealed = this.blocks[rowIndex][colIndex].content == 'mine' ? false : true;
         let maxRange = this.difficultlies[this.level].no_mines_radius;
 
         for(let direction in mapBlock) {
@@ -201,7 +196,7 @@ class Minesweeper {
             else if(direction == 'topLeft' &&  (rowIndex == 0 || colIndex == 0)) continue;
             else if(direction == 'bottomRight' &&  (rowIndex == block_count_y || colIndex == block_count_x)) continue;
             else if(direction == 'bottomLeft' &&  (rowIndex == block_count_y || colIndex == 0)) continue;
-            
+
             let nextBlock = this.blocks[rowIndex + mapBlock[direction][0]][colIndex + mapBlock[direction][1]];
 
             if(nextRowIndex < 0 || 
@@ -209,6 +204,7 @@ class Minesweeper {
                 nextColIndex < 0 ||
                 nextColIndex > block_count_x ) return;
             else if(nextBlock.revealed) continue ;
+            else if(nextBlock.content == "mine") continue;
             else if(!nextBlock.revealed && Number.isInteger(nextBlock.content)) nextBlock.revealed = true;
             else if(rangeNo < maxRange) this.go(nextRowIndex, nextColIndex, rangeNo++)
             else return;
@@ -252,13 +248,22 @@ class Minesweeper {
                         mousePosition.x >= col.x &&
                         mousePosition.x <= col.x + that.blockSettings.width &&
                         mousePosition.y >= col.y &&
-                        mousePosition.y <= col.y + that.blockSettings.height) {
+                        mousePosition.y <= col.y + that.blockSettings.height &&
+                        that.blocks[indexRow][indexCol].revealed == false) {
                         if(!this.firstClick) {
                             that.generateMines(indexRow, indexCol)
-                            this.firstClick = true;
                             that.go(indexRow,indexCol,0, true)
+                            this.firstClick = true;
                         }else{
-                            that.go(indexRow,indexCol,0)
+                            if(that.blocks[indexRow][indexCol].content == 'mine') {
+                                that.gameOver = true;
+                                console.log(this.gameOver)
+                                alert('Game Over!')
+                                return;
+                            }else{
+                                that.go(indexRow,indexCol,0, false)
+                            }
+                            that.checkWin()
                         }
                         console.log('clicked at ',col)
                     }
@@ -266,7 +271,10 @@ class Minesweeper {
             }) 
         })
     }
-    mineClicked() {
-
+    checkWin() {
+        let resultBlock = this.blocks.filter(block => !block.every(b => (b.revealed && b.content !== 'mine') || (!b.revealed && b.content == 'mine')))
+        console.log(resultBlock)
+        if(resultBlock.length == 0) 
+            alert('win')
     }
 }

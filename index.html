@@ -17,17 +17,21 @@
                     <div class="difficultly">
                         <label for="difficultly">Difficultly: </label>
                         <select name="difficultly" id="difficultly">
-                            <option value="Easy">Easy</option>
-                            <option value="Medium">Medium</option>
-                            <option value="Hard">Hard</option>
+                            <option value="easy">Easy</option>
+                            <option value="medium">Medium</option>
+                            <option value="hard">Hard</option>
                         </select>
                     </div>
                     <div class="statistics">
-                        
+                        <span class="text-red"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-triangle"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></span>
+                        <span id="numOfMines">10</span>
                     </div>
                     <div class="buttons">
-                        <button class="btn btn-primary">Play</button>
+                        <button class="btn btn-primary" id="btn-play">Play</button>
                     </div>
+                </div>
+                <div id="starter">
+                    <h1>Please choose difficultly to play..</h1>
                 </div>
                 <div class="card-body">
                     <canvas id="canvas"></canvas>
@@ -36,7 +40,10 @@
             </div>
         </div>
     </div>
-    
+    <footer>
+        <p>Created by <a href="http://ahmadsaugi.com" target="_blank">Ahmad Saugi</a></p>
+        <a href="https://github.com/zuramai/minesweeper-html5" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a>
+    </footer>
     <script src="assets/js/Minesweeper.js"></script>
     <script src="assets/js/main.js"></script>
 </body>
