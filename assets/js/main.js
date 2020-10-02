@@ -3,6 +3,7 @@ const game = new Minesweeper({
     el:canvas,
     height: 720,
     width: 720,
-    level: 'easy'
+    level: 'easy',
+    bombImageEl: document.getElementById('bomb')
 })
 game.render()

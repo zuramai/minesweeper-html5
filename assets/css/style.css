@@ -55,3 +55,6 @@ body {
     cursor: pointer;
     background-color: #0984e3;
 }
+#bomb {
+    display: none;
+}
